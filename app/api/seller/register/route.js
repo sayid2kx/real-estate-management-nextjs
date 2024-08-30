@@ -1,4 +1,3 @@
-// app/api/auth/seller/route.js
 import { connectToMongoDB } from "@/lib/database";
 import Seller from "@/app/models/seller";
 import { NextResponse } from "next/server";
