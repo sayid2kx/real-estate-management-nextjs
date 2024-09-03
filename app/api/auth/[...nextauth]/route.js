@@ -1,4 +1,3 @@
-// app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToMongoDB } from "@/lib/database";
@@ -11,13 +10,13 @@ export const authOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        usernameOrEmail: { label: "Username or Email", type: "text" },
         password: { label: "Password", type: "password" },
-        userType: { label: "User Type", type: "text" }, // To pass the user type
+        userType: { label: "User Type", type: "text" },
       },
 
       async authorize(credentials) {
-        const { email, password, userType } = credentials;
+        const { usernameOrEmail, password, userType } = credentials;
 
         try {
           await connectToMongoDB();
@@ -25,7 +24,6 @@ export const authOptions = {
           let UserModel;
           let user;
 
-          // Determine the model to use based on userType
           if (userType === "buyer") {
             UserModel = Buyer;
           } else if (userType === "seller") {
@@ -34,20 +32,19 @@ export const authOptions = {
             throw new Error("Invalid user type");
           }
 
-          // Find the user in the appropriate collection
-          user = await UserModel.findOne({ email });
+          user = await UserModel.findOne({
+            $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+          });
 
           if (!user) {
             return null;
           }
 
-          // Compare passwords
           const passwordsMatch = await bcrypt.compare(password, user.password);
           if (!passwordsMatch) {
             return null;
           }
 
-          // Return user object with role
           return {
             ...user.toObject(),
             role: userType,
@@ -62,12 +59,12 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role; // Add the role to the JWT token
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.role = token.role; // Add the role to the session
+      session.user.role = token.role;
       return session;
     },
   },

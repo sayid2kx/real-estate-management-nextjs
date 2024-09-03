@@ -5,33 +5,39 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   try {
-    const { fullname, email, phone, password, address } = await req.json();
+    const { fullname, username, email, phone, password, address } =
+      await req.json();
 
-    if (!fullname || !email || !phone || !password || !address) {
+    if (!fullname || !username || !email || !phone || !password || !address) {
       return NextResponse.json(
         { message: "All fields are required." },
         { status: 400 }
       );
     }
 
-    // Connect to MongoDB
     await connectToMongoDB();
 
-    // Check if user already exists
-    const existingUser = await Seller.findOne({ email });
-    if (existingUser) {
+    const existingUserEmail = await Seller.findOne({ email });
+    if (existingUserEmail) {
       return NextResponse.json(
         { message: "Email already registered." },
         { status: 400 }
       );
     }
 
-    // Hash the password
+    const existingUsername = await Seller.findOne({ username });
+    if (existingUsername) {
+      return NextResponse.json(
+        { message: "Username already registered." },
+        { status: 400 }
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user record
     await Seller.create({
       fullname,
+      username,
       email,
       phone,
       password: hashedPassword,
