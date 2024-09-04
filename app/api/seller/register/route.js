@@ -17,22 +17,6 @@ export async function POST(req) {
 
     await connectToMongoDB();
 
-    const existingUserEmail = await Seller.findOne({ email });
-    if (existingUserEmail) {
-      return NextResponse.json(
-        { message: "Email already registered." },
-        { status: 400 }
-      );
-    }
-
-    const existingUsername = await Seller.findOne({ username });
-    if (existingUsername) {
-      return NextResponse.json(
-        { message: "Username already registered." },
-        { status: 400 }
-      );
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await Seller.create({
