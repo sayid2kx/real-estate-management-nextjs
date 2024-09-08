@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function FooterSection() {
   return (
     <footer className="bg-gray-900 text-white py-16 mt-16 border-t border-gray-800">
-      <div className="container mx-auto px-4">
+      <div className="w-full px-4">
         <nav className="grid md:grid-cols-3 gap-12">
           <section>
             <h4 className="text-2xl font-bold mb-6">Quick Links</h4>

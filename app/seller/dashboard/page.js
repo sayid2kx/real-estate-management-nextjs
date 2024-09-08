@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import LogoutButton from "@/app/components/LogoutButton";
+import SellerDashboardPage from "@/app/components/dashboard-seller";
 
 export default async function SellerDashboard() {
   const session = await getServerSession(authOptions);
@@ -9,8 +9,7 @@ export default async function SellerDashboard() {
 
   return (
     <div>
-      <p>Hello Seller Dashboard</p>
-      <LogoutButton />
+      <SellerDashboardPage />
     </div>
   );
 }
