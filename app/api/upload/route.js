@@ -29,10 +29,11 @@ export async function POST(request) {
         process.cwd(),
         "public",
         "uploads",
+        "properties",
         imageName
       );
       await writeFile(imagePath, buffer);
-      imagePaths.push(`/uploads/${imageName}`);
+      imagePaths.push(`/uploads/properties/${imageName}`);
     }
 
     const propertyData = {

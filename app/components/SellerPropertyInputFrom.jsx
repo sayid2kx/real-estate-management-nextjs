@@ -14,7 +14,7 @@ export default function AddNewProperty() {
     city: "",
     stateProvince: "",
     zipPostalCode: "",
-    country: "",
+    country: "Bangladesh",
     description: "",
     yearBuilt: "",
     amenities: {
@@ -78,11 +78,8 @@ export default function AddNewProperty() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-blue-50 py-10">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto"
-      >
+    <main className="flex min-h-screen items-center justify-center bg-blue-200 py-10">
+      <form onSubmit={handleSubmit} className="p-8 max-w-2xl mx-auto">
         <div className="mb-4">
           <label
             htmlFor="propertyTitle"
@@ -260,7 +257,7 @@ export default function AddNewProperty() {
           <label htmlFor="country" className="block mb-2 text-lg font-medium">
             Country
           </label>
-          <input
+          <select
             type="text"
             id="country"
             name="country"
@@ -269,7 +266,12 @@ export default function AddNewProperty() {
             onChange={handleChange}
             required
             className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500 hover:border-blue-400"
-          />
+          >
+            <option value="Bangladesh">Bangladesh</option>
+            <option value="India">India</option>
+            <option value="Pakistan">Pakistan</option>
+            <option value="Nepal">Nepal</option>
+          </select>
         </div>
         <div className="mb-4">
           <label

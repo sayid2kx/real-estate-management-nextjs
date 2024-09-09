@@ -6,20 +6,40 @@ import NavbarSection from "./Navbar";
 import FooterSection from "./Footer";
 
 export default function RegisterForm({ role }) {
-  const [fullname, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    username: "",
+    phone: "",
+    address: "",
+    password: "",
+    country: "Bangladesh",
+    image: null,
+    gender: "Male",
+  });
   const [msg, setMsg] = useState("");
 
   const router = useRouter();
 
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "file" ? files[0] : value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!fullname || !username || !email || !phone || !address || !password) {
+    if (
+      !formData.fullname ||
+      !formData.username ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.address ||
+      !formData.password
+    ) {
       setMsg("All fields are necessary.");
       return;
     }
@@ -30,7 +50,10 @@ export default function RegisterForm({ role }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, username }),
+        body: JSON.stringify({
+          email: formData.email,
+          username: formData.username,
+        }),
       });
 
       const { user } = await resUserExists.json();
@@ -40,29 +63,28 @@ export default function RegisterForm({ role }) {
         return;
       }
 
-      // Register new user
+      const formDataToSend = new FormData();
+      for (const key in formData) {
+        formDataToSend.append(key, formData[key]);
+      }
+
       const res = await fetch(`/api/${role}/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullname,
-          username,
-          email,
-          phone,
-          address,
-          password,
-        }),
+        body: formDataToSend,
       });
 
       if (res.ok) {
-        setFullName("");
-        setUsername("");
-        setEmail("");
-        setPhone("");
-        setAddress("");
-        setPassword("");
+        setFormData({
+          fullname: "",
+          email: "",
+          username: "",
+          phone: "",
+          address: "",
+          password: "",
+          country: "Bangladesh",
+          image: null,
+          gender: "Male",
+        });
         setMsg("");
         router.push(`/${role}/login`);
       } else {
@@ -84,91 +106,149 @@ export default function RegisterForm({ role }) {
   return (
     <div className="bg-green-100 min-h-screen flex flex-col">
       <NavbarSection />
-      <div className="flex-grow flex flex-col items-center justify-center py-12">
+      <div className="flex-grow flex flex-col items-center justify-center py-12 px-4">
         <h1 className="text-3xl font-bold mb-6 text-green-800">
           {role === "buyer" ? "Buyer Register Page" : "Seller Register Page"}
         </h1>
-        <div className="bg-white p-6 rounded-lg shadow-md max-w-sm w-full">
-          <h2 className="text-xl font-bold mb-4 text-center">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl">
+          <h2 className="text-2xl font-bold mb-6 text-center">
             Register Your Account
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Full Name
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:space-x-4">
+              <div className="w-full sm:w-1/2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   name="fullname"
-                  className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  value={fullname}
-                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="FullName"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  value={formData.fullname}
+                  onChange={handleChange}
                 />
-              </label>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Username
+              </div>
+              <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Username
+                </label>
                 <input
                   type="text"
                   name="username"
-                  className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Username"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  value={formData.username}
+                  onChange={handleChange}
                 />
-              </label>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
+            <div className="flex flex-col sm:flex-row sm:space-x-4">
+              <div className="w-full sm:w-1/2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
-                  className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  value={formData.email}
+                  onChange={handleChange}
                 />
-              </label>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Phone Number
+              </div>
+              <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number
+                </label>
                 <input
                   type="tel"
                   name="phone"
-                  className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Phone No."
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  value={formData.phone}
+                  onChange={handleChange}
                 />
-              </label>
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
-                <input
-                  type="password"
-                  name="password"
-                  className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
               </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                value={formData.password}
+                onChange={handleChange}
+              />
             </div>
+            <div className="flex flex-col sm:flex-row sm:space-x-4">
+              <div className="w-full sm:w-1/2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Gender
+                </label>
+                <select
+                  name="gender"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  value={formData.gender}
+                  onChange={handleChange}
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+              <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Country
+                </label>
+                <select
+                  name="country"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  value={formData.country}
+                  onChange={handleChange}
+                >
+                  <option value="Bangladesh">Bangladesh</option>
+                  <option value="India">India</option>
+                  <option value="Pakistan">Pakistan</option>
+                  <option value="Nepal">Nepal</option>
+                </select>
+              </div>
+            </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Address
-                <input
-                  type="text"
-                  name="address"
-                  className="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
               </label>
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                value={formData.address}
+                onChange={handleChange}
+              />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Profile Image
+              </label>
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                onChange={handleChange}
+              />
+            </div>
+
             <button
               type="submit"
-              className="bg-green-600 text-white font-bold py-2 px-4 rounded-md w-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+              className="bg-green-600 text-white font-bold py-3 px-4 rounded-md w-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
             >
               Register
             </button>
@@ -180,7 +260,7 @@ export default function RegisterForm({ role }) {
             </div>
           )}
 
-          <p className="mt-4 text-sm text-gray-600 text-center">
+          <p className="mt-6 text-sm text-gray-600 text-center">
             Already have an account?{" "}
             <Link
               href={`/${role}/login`}

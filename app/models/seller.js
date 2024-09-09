@@ -1,6 +1,6 @@
 import mongoose, { Schema, models } from "mongoose";
 
-const sellerSchema = new Schema(
+const SellerSchema = new mongoose.Schema(
   {
     fullname: {
       type: String,
@@ -28,9 +28,22 @@ const sellerSchema = new Schema(
       type: String,
       required: true,
     },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Others"],
+      required: true,
+    },
+    country: {
+      type: String,
+      enum: ["Bangladesh", "India", "Pakistan", "Nepal"],
+      required: true,
+    },
+    image: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
-const Seller = models.Seller || mongoose.model("Seller", sellerSchema);
+const Seller = mongoose.models.Seller || mongoose.model("Seller", SellerSchema);
 export default Seller;
