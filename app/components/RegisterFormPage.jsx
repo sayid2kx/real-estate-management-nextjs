@@ -104,41 +104,41 @@ export default function RegisterForm({ role }) {
   }, [msg]);
 
   return (
-    <div className="bg-green-100 min-h-screen flex flex-col">
+    <div className="bg-green-50 min-h-screen flex flex-col">
       <NavbarSection />
       <div className="flex-grow flex flex-col items-center justify-center py-12 px-4">
-        <h1 className="text-3xl font-bold mb-6 text-green-800">
-          {role === "buyer" ? "Buyer Register Page" : "Seller Register Page"}
+        <h1 className="text-3xl lg:text-4xl font-bold mb-6 text-gray-600">
+          {role === "buyer" ? "Buyer Registration" : "Seller Registration"}
         </h1>
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl">
-          <h2 className="text-2xl font-bold mb-6 text-center">
-            Register Your Account
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg">
+          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">
+            Create Your Account
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:space-x-4">
               <div className="w-full sm:w-1/2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
                   Full Name
                 </label>
                 <input
                   type="text"
                   name="fullname"
-                  placeholder="FullName"
-                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  placeholder="Full Name"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.fullname}
                   onChange={handleChange}
                 />
               </div>
               <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
                   Username
                 </label>
                 <input
                   type="text"
                   name="username"
                   placeholder="Username"
-                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.username}
                   onChange={handleChange}
                 />
@@ -146,53 +146,53 @@ export default function RegisterForm({ role }) {
             </div>
             <div className="flex flex-col sm:flex-row sm:space-x-4">
               <div className="w-full sm:w-1/2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
                   Email
                 </label>
                 <input
                   type="email"
                   name="email"
                   placeholder="Email"
-                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
               <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   name="phone"
-                  placeholder="Phone No."
-                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  placeholder="Phone Number"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.phone}
                   onChange={handleChange}
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 mb-1">
                 Password
               </label>
               <input
                 type="password"
                 name="password"
                 placeholder="Password"
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 value={formData.password}
                 onChange={handleChange}
               />
             </div>
             <div className="flex flex-col sm:flex-row sm:space-x-4">
               <div className="w-full sm:w-1/2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
                   Gender
                 </label>
                 <select
                   name="gender"
-                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.gender}
                   onChange={handleChange}
                 >
@@ -202,12 +202,12 @@ export default function RegisterForm({ role }) {
                 </select>
               </div>
               <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
                   Country
                 </label>
                 <select
                   name="country"
-                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.country}
                   onChange={handleChange}
                 >
@@ -220,35 +220,35 @@ export default function RegisterForm({ role }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 mb-1">
                 Address
               </label>
               <input
                 type="text"
                 name="address"
                 placeholder="Address"
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 value={formData.address}
                 onChange={handleChange}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 mb-1">
                 Profile Image
               </label>
               <input
                 type="file"
                 name="image"
                 accept="image/*"
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 onChange={handleChange}
               />
             </div>
 
             <button
               type="submit"
-              className="bg-green-600 text-white font-bold py-3 px-4 rounded-md w-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+              className="bg-blue-600 text-white font-bold py-3 px-4 rounded-md w-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
             >
               Register
             </button>
@@ -264,7 +264,7 @@ export default function RegisterForm({ role }) {
             Already have an account?{" "}
             <Link
               href={`/${role}/login`}
-              className="underline text-green-600 text-xl hover:text-green-800"
+              className="underline text-green-600 text-lg hover:text-green-800"
             >
               Login
             </Link>

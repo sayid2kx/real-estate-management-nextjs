@@ -26,7 +26,7 @@ export default function LoginForm({ userType }) {
       });
 
       if (res.error) {
-        setMsg("Invalid Credentials");
+        setMsg("Invalid credentials. Please try again.");
         return;
       }
 
@@ -45,35 +45,45 @@ export default function LoginForm({ userType }) {
   }, [msg]);
 
   return (
-    <div className="bg-cyan-100 min-h-screen flex flex-col">
+    <div className="bg-cyan-50 min-h-screen flex flex-col">
       <NavbarSection />
-      <div className="flex-grow flex flex-col items-center justify-center py-16">
-        <h1 className="text-3xl font-bold mb-8 text-green-800">
-          {userType === "buyer" ? "Buyer Login Page" : "Seller Login Page"}
+      <div className="flex-grow flex flex-col items-center justify-center py-12 px-4">
+        <h1 className="text-3xl lg:text-4xl font-bold mb-8 text-gray-600">
+          {userType === "buyer" ? "Buyer Login" : "Seller Login"}
         </h1>
-        <div className="bg-white shadow-lg p-8 rounded-lg max-w-md w-full border-t-4 border-green-400">
-          <h2 className="text-2xl font-bold mb-8 text-green-800 text-center">
-            Login
+        <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md border-t-4 border-green-400">
+          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">
+            Login to Your Account
           </h2>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <input
-              onChange={(e) => setUsernameOrEmail(e.target.value)}
-              type="text"
-              placeholder="Username or Email"
-              className="px-4 py-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-              value={usernameOrEmail}
-            />
-            <input
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              placeholder="Password"
-              className="px-4 py-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-              value={password}
-            />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Username or Email
+              </label>
+              <input
+                onChange={(e) => setUsernameOrEmail(e.target.value)}
+                type="text"
+                placeholder="Username or Email"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={usernameOrEmail}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Password
+              </label>
+              <input
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                placeholder="Password"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={password}
+              />
+            </div>
             <button
               type="submit"
-              className="bg-green-600 text-white font-bold py-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+              className="bg-blue-600 text-white font-bold py-3 rounded-md w-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
             >
               Login
             </button>
@@ -83,11 +93,11 @@ export default function LoginForm({ userType }) {
               </div>
             )}
 
-            <p className="mt-6 text-sm text-gray-600 text-center">
+            <p className="mt-6 text-sm text-gray-800 text-center">
               Don't have an account?{" "}
               <Link
                 href={`/${userType}/register`}
-                className="underline text-green-600 text-xl hover:text-green-800"
+                className="underline text-green-600 text-lg hover:text-green-800"
               >
                 Register
               </Link>

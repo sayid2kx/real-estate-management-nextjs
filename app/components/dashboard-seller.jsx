@@ -12,7 +12,7 @@ const MainContent = () => {
         </h2>
         <div className="flex justify-center w-full">
           <Link
-            href={"/dashboard/add-property"}
+            href={"/seller/dashboard/add-property"}
             className="bg-green-500 text-white text-lg px-6 py-3 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 transition-transform transform hover:scale-105"
           >
             Add Property

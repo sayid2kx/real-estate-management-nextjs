@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 const AllPropertiesShow = () => {
@@ -23,30 +24,35 @@ const AllPropertiesShow = () => {
   }, []);
 
   if (properties.length === 0) {
-    return <p className="text-center mt-4">No properties found</p>;
+    return <p className="text-center text-xl mt-4">No properties found</p>;
   }
 
   return (
-    <div>
+    <div className="p-4">
       <ul className="space-y-8">
         {properties.map((property) => (
           <li
             key={property._id}
-            className="flex border-4 border-gray-500 hover:border-green-500 transition-colors duration-300 bg-white rounded-lg shadow-lg overflow-hidden"
+            className="bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col md:flex-row"
           >
-            <div className="relative w-1/3 h-72">
-              {property.images.length > 0 ? (
-                <Image
-                  src={property.images[0]}
-                  alt={property.propertyTitle}
-                  layout="fill"
-                  className="object-cover"
-                />
-              ) : (
-                <div className="bg-gray-200 w-full h-full"></div>
-              )}
-            </div>
-            <div className="w-2/3 p-6">
+            <Link
+              href={`/seller/dashboard/all-properties/${property._id}`}
+              className="w-full md:w-1/3"
+            >
+              <div className="relative h-48 md:h-full cursor-pointer">
+                {property.images.length > 0 ? (
+                  <Image
+                    src={property.images[0]}
+                    alt={property.propertyTitle}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="bg-gray-200 w-full h-full"></div>
+                )}
+              </div>
+            </Link>
+            <div className="w-full md:w-2/3 p-6">
               <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                 {property.propertyTitle}
               </h2>

@@ -1,36 +1,27 @@
 "use client";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const SellerPropertyShow = () => {
-  const { data: session, status } = useSession();
+const AllPropertiesShowToBuyer = () => {
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
-    if (session?.user) {
-      const fetchProperties = async () => {
-        try {
-          const encodedEmail = encodeURIComponent(session.user.email);
-          const res = await fetch(`/api/seller/property/${encodedEmail}`);
-          if (res.ok) {
-            const data = await res.json();
-            setProperties(data);
-          } else {
-            console.error("Error fetching properties", res.status);
-          }
-        } catch (error) {
-          console.error("Failed to fetch properties:", error);
+    const fetchProperties = async () => {
+      try {
+        const res = await fetch("/api/buyer/allproperties");
+        if (res.ok) {
+          const data = await res.json();
+          setProperties(data);
+        } else {
+          console.error("Error fetching properties", res.status);
         }
-      };
-      fetchProperties();
-    }
-  }, [session]);
-
-  if (status === "loading") {
-    return <p className="text-center text-xl mt-4">Loading...</p>;
-  }
+      } catch (error) {
+        console.error("Failed to fetch properties:", error);
+      }
+    };
+    fetchProperties();
+  }, []);
 
   if (properties.length === 0) {
     return <p className="text-center text-xl mt-4">No properties found</p>;
@@ -45,7 +36,7 @@ const SellerPropertyShow = () => {
             className="bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col md:flex-row"
           >
             <Link
-              href={`/seller/dashboard/my-properties/${property._id}`}
+              href={`/buyer/dashboard/${property._id}`}
               className="w-full md:w-1/3"
             >
               <div className="relative h-48 md:h-full cursor-pointer">
@@ -53,7 +44,7 @@ const SellerPropertyShow = () => {
                   <Image
                     src={property.images[0]}
                     alt={property.propertyTitle}
-                    layout="fill"
+                    fill
                     className="object-cover"
                   />
                 ) : (
@@ -96,4 +87,4 @@ const SellerPropertyShow = () => {
   );
 };
 
-export default SellerPropertyShow;
+export default AllPropertiesShowToBuyer;
