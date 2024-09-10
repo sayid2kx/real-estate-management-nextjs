@@ -20,11 +20,11 @@ export default async function PropertyDetails({ params }) {
       <div className="min-h-screen bg-cyan-200 p-8">
         <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
           <div className="relative w-full h-96 mb-8">
-            {property.images.length > 0 ? (
+            {property.image ? (
               <Image
-                src={property.images[0]}
+                src={property.image}
                 alt={property.propertyTitle}
-                layout="fill"
+                fill
                 className="object-cover rounded-md"
               />
             ) : (
@@ -42,8 +42,8 @@ export default async function PropertyDetails({ params }) {
                 {property.price.toLocaleString()} BDT
               </span>
             </p>
-            <p className="text-gray-600 text-3xl mb-4">
-              Description: {property.description}
+            <p className="text-gray-600 text-xl mb-4">
+              <b>Description:</b> {property.description}
             </p>
           </div>
           <div className="bg-gray-300 p-6 rounded-lg shadow-md mb-6">

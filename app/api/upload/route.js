@@ -9,32 +9,28 @@ export async function POST(request) {
     await connectToMongoDB();
 
     const data = await request.formData();
-    const images = data.getAll("images");
+    const image = data.get("image");
 
-    if (!images || images.length === 0) {
+    if (!image) {
       return NextResponse.json(
-        { success: false, message: "No images uploaded" },
+        { success: false, message: "No image uploaded" },
         { status: 400 }
       );
     }
 
-    const imagePaths = [];
+    const bytes = await image.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    for (const image of images) {
-      const bytes = await image.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      const imageName = `${Date.now()}_${image.name}`;
-      const imagePath = path.join(
-        process.cwd(),
-        "public",
-        "uploads",
-        "properties",
-        imageName
-      );
-      await writeFile(imagePath, buffer);
-      imagePaths.push(`/uploads/properties/${imageName}`);
-    }
+    const imageName = `${Date.now()}_${image.name}`;
+    const imagePath = path.join(
+      process.cwd(),
+      "public",
+      "uploads",
+      "properties",
+      imageName
+    );
+    await writeFile(imagePath, buffer);
+    const imageUrl = `/uploads/properties/${imageName}`;
 
     const propertyData = {
       propertyTitle: data.get("propertyTitle"),
@@ -55,7 +51,7 @@ export async function POST(request) {
       contactName: data.get("contactName"),
       email: data.get("email"),
       phone: data.get("phone"),
-      images: imagePaths,
+      image: imageUrl,
     };
 
     const newProperty = new Property(propertyData);

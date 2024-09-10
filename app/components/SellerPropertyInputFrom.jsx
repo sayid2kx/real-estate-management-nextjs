@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function AddNewProperty() {
   const [formData, setFormData] = useState({
@@ -27,9 +28,37 @@ export default function AddNewProperty() {
     contactName: "",
     email: "",
     phone: "",
-    images: null,
+    image: null,
   });
   const router = useRouter();
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    const fetchSellerDetails = async () => {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch(
+            `/api/seller/info?email=${session.user.email}`
+          );
+          if (response.ok) {
+            const sellerData = await response.json();
+            setFormData((prev) => ({
+              ...prev,
+              contactName: sellerData.fullname,
+              email: sellerData.email,
+              phone: sellerData.phone,
+            }));
+          } else {
+            console.error("Failed to fetch seller details");
+          }
+        } catch (error) {
+          console.error("Error fetching seller details:", error);
+        }
+      }
+    };
+
+    fetchSellerDetails();
+  }, [session]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -44,7 +73,7 @@ export default function AddNewProperty() {
   };
 
   const handleImageChange = (e) => {
-    setFormData((prev) => ({ ...prev, images: e.target.files }));
+    setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
   };
 
   const handleSubmit = async (e) => {
@@ -53,10 +82,8 @@ export default function AddNewProperty() {
     for (const key in formData) {
       if (key === "amenities") {
         formDataToSend.append(key, JSON.stringify(formData[key]));
-      } else if (key === "images") {
-        for (let i = 0; i < formData.images.length; i++) {
-          formDataToSend.append("images", formData.images[i]);
-        }
+      } else if (key === "image" && formData[key]) {
+        formDataToSend.append(key, formData[key]);
       } else {
         formDataToSend.append(key, formData[key]);
       }
@@ -362,11 +389,9 @@ export default function AddNewProperty() {
             type="text"
             id="contactName"
             name="contactName"
-            placeholder="Contact Name"
             value={formData.contactName}
-            onChange={handleChange}
-            required
-            className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500 hover:border-blue-400"
+            readOnly
+            className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500"
           />
         </div>
         <div className="mb-4">
@@ -377,11 +402,9 @@ export default function AddNewProperty() {
             type="email"
             id="email"
             name="email"
-            placeholder="Contact Email"
             value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500 hover:border-blue-400"
+            readOnly
+            className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500"
           />
         </div>
         <div className="mb-4">
@@ -389,25 +412,23 @@ export default function AddNewProperty() {
             Phone
           </label>
           <input
-            type="text"
+            type="tel"
             id="phone"
             name="phone"
-            placeholder="Contact Phone"
             value={formData.phone}
-            onChange={handleChange}
-            required
-            className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500 hover:border-blue-400"
+            readOnly
+            className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500"
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="images" className="block mb-2 text-lg font-medium">
-            Upload Images
+          <label htmlFor="image" className="block mb-2 text-lg font-medium">
+            Upload an Image
           </label>
           <input
             type="file"
-            id="images"
-            name="images"
-            multiple
+            id="image"
+            name="image"
+            accept="image/*"
             onChange={handleImageChange}
             required
             className="w-full p-4 border rounded text-sm bg-gray-50 focus:bg-white focus:border-blue-500 hover:border-blue-400"

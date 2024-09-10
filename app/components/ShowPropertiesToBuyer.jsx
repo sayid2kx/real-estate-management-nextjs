@@ -40,9 +40,9 @@ const AllPropertiesShowToBuyer = () => {
               className="w-full md:w-1/3"
             >
               <div className="relative h-48 md:h-full cursor-pointer">
-                {property.images.length > 0 ? (
+                {property.image ? (
                   <Image
-                    src={property.images[0]}
+                    src={property.image}
                     alt={property.propertyTitle}
                     fill
                     className="object-cover"
