@@ -1,71 +1,70 @@
-import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
-import { connectToMongoDB } from "@/lib/database";
-import Property from "@/app/models/properties";
+import { NextResponse } from 'next/server'
+import { writeFile } from 'fs/promises'
+import path from 'path'
+import { connectToMongoDB } from '@/lib/database'
+import Property from '@/app/models/properties'
 
 export async function POST(request) {
   try {
-    await connectToMongoDB();
+    await connectToMongoDB()
 
-    const data = await request.formData();
-    const image = data.get("image");
+    const data = await request.formData()
+    const image = data.get('image')
 
     if (!image) {
       return NextResponse.json(
-        { success: false, message: "No image uploaded" },
-        { status: 400 }
-      );
+        { success: false, message: 'No image uploaded' },
+        { status: 400 },
+      )
     }
 
-    const bytes = await image.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const bytes = await image.arrayBuffer()
+    const buffer = Buffer.from(bytes)
 
-    const imageName = `${Date.now()}_${image.name}`;
+    const imageName = `${Date.now()}_${image.name}`
     const imagePath = path.join(
       process.cwd(),
-      "public",
-      "uploads",
-      "properties",
-      imageName
-    );
-    await writeFile(imagePath, buffer);
-    const imageUrl = `/uploads/properties/${imageName}`;
+      'public',
+      'uploads',
+      'properties',
+      imageName,
+    )
+    await writeFile(imagePath, buffer)
+    const imageUrl = `/uploads/properties/${imageName}`
 
     const propertyData = {
-      propertyTitle: data.get("propertyTitle"),
-      propertyType: data.get("propertyType"),
-      price: data.get("price"),
-      bedrooms: data.get("bedrooms"),
-      bathrooms: data.get("bathrooms"),
-      totalArea: data.get("totalArea"),
-      address: data.get("address"),
-      city: data.get("city"),
-      stateProvince: data.get("stateProvince"),
-      zipPostalCode: data.get("zipPostalCode"),
-      country: data.get("country"),
-      description: data.get("description"),
-      yearBuilt: data.get("yearBuilt"),
-      amenities: JSON.parse(data.get("amenities")),
-      parkingAvailability: data.get("parkingAvailability"),
-      contactName: data.get("contactName"),
-      email: data.get("email"),
-      phone: data.get("phone"),
+      propertyTitle: data.get('propertyTitle'),
+      propertyType: data.get('propertyType'),
+      price: data.get('price'),
+      bedrooms: data.get('bedrooms'),
+      bathrooms: data.get('bathrooms'),
+      totalArea: data.get('totalArea'),
+      address: data.get('address'),
+      division: data.get('division'),
+      district: data.get('district'),
+      zipPostalCode: data.get('zipPostalCode'),
+      description: data.get('description'),
+      yearBuilt: data.get('yearBuilt'),
+      amenities: JSON.parse(data.get('amenities')),
+      parkingAvailability: data.get('parkingAvailability'),
+      contactName: data.get('contactName'),
+      email: data.get('email'),
+      phone: data.get('phone'),
       image: imageUrl,
-    };
+    }
 
-    const newProperty = new Property(propertyData);
-    await newProperty.save();
+    const newProperty = new Property(propertyData)
+    await newProperty.save()
 
     return NextResponse.json(
-      { success: true, message: "Property added successfully" },
-      { status: 201 }
-    );
+      { success: true, message: 'Property added successfully' },
+      { status: 201 },
+    )
   } catch (error) {
-    console.error("Error adding property:", error);
+    console.error('Error adding property:', error)
     return NextResponse.json(
-      { success: false, message: "Error adding property" },
-      { status: 500 }
-    );
+      { success: false, message: 'Error adding property' },
+      { status: 500 },
+    )
   }
 }

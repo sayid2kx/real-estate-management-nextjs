@@ -1,25 +1,26 @@
-import { connectToMongoDB } from "@/lib/database";
-import Property from "@/app/models/properties";
-import SellerNavbarComp from "@/app/components/SellerNavbar";
-import Image from "next/image";
-import FooterSection from "@/app/components/Footer";
+import { connectToMongoDB } from '@/lib/database'
+import Property from '@/app/models/properties'
+import SellerNavbarComp from '@/app/components/SellerNavbar'
+import Image from 'next/image'
+import FooterSection from '@/app/components/Footer'
 
 export default async function PropertyDetails({ params }) {
-  const { id } = params;
-  await connectToMongoDB();
+  const { id } = params
+  await connectToMongoDB()
 
-  const property = await Property.findById(id);
+  const property = await Property.findById(id)
 
   if (!property) {
-    return <p>Property not found</p>;
+    return <p>Property not found</p>
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-r from-cyan-100 to-blue-50">
       <SellerNavbarComp />
-      <div className="min-h-screen bg-cyan-200 p-8">
-        <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <div className="relative w-full h-96 mb-8">
+
+      <div className="max-w-5xl mx-auto p-6 sm:p-8">
+        <div className="bg-white p-8 rounded-lg shadow-lg">
+          <div className="relative w-full h-64 sm:h-96 mb-8">
             {property.image ? (
               <Image
                 src={property.image}
@@ -31,23 +32,25 @@ export default async function PropertyDetails({ params }) {
               <div className="bg-gray-200 w-full h-full rounded-md"></div>
             )}
           </div>
-          <h1 className="text-4xl text-gray-600 font-bold mb-4">
+
+          <h1 className="text-4xl font-bold text-gray-800 mb-6">
             {property.propertyTitle}
           </h1>
 
-          <div className="bg-gray-300 p-6 rounded-lg shadow-md mb-6">
-            <p className="text-lg text-gray-700 mb-4">
-              {property.propertyType} -{" "}
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-6">
+            <p className="text-lg sm:text-xl text-gray-700 mb-4">
+              {property.propertyType} -{' '}
               <span className="font-semibold">
                 {property.price.toLocaleString()} BDT
               </span>
             </p>
-            <p className="text-gray-600 text-xl mb-4">
-              <b>Description:</b> {property.description}
+            <p className="text-lg sm:text-xl text-gray-700 mb-4">
+              <strong>Description:</strong> {property.description}
             </p>
           </div>
-          <div className="bg-gray-300 p-6 rounded-lg shadow-md mb-6">
-            <div className="grid grid-cols-2 gap-4 text-sm text-gray-700 mb-6">
+
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
               <p className="text-lg">
                 <strong>Bedrooms:</strong> {property.bedrooms}
               </p>
@@ -75,55 +78,54 @@ export default async function PropertyDetails({ params }) {
             </div>
           </div>
 
-          <div className="bg-gray-300 p-6 rounded-lg shadow-md mb-6">
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-2xl font-semibold mb-4">Amenities</h2>
-            <ul className="list-disc pl-5 space-y-2">
+            <ul className="list-disc pl-5 space-y-2 text-lg text-gray-700">
               <li>
-                <strong>CCTV:</strong> {property.amenities.cctv ? "Yes" : "No"}
+                <strong>CCTV:</strong> {property.amenities.cctv ? 'Yes' : 'No'}
               </li>
               <li>
-                <strong>Gym:</strong> {property.amenities.gym ? "Yes" : "No"}
+                <strong>Gym:</strong> {property.amenities.gym ? 'Yes' : 'No'}
               </li>
               <li>
-                <strong>Security:</strong>{" "}
-                {property.amenities.security ? "Yes" : "No"}
+                <strong>Security:</strong>{' '}
+                {property.amenities.security ? 'Yes' : 'No'}
               </li>
               <li>
-                <strong>Pool:</strong> {property.amenities.pool ? "Yes" : "No"}
+                <strong>Pool:</strong> {property.amenities.pool ? 'Yes' : 'No'}
               </li>
             </ul>
-            <p className="text-lg mt-5 mb-6">
-              <strong>Parking Availability:</strong>{" "}
+            <p className="text-lg mt-4">
+              <strong>Parking Availability:</strong>{' '}
               {property.parkingAvailability}
             </p>
           </div>
 
-          <div className="bg-gray-300 p-6 rounded-lg shadow-md mb-6">
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
-            <p>
+            <p className="text-lg text-gray-700">
               <strong>Contact Name:</strong> {property.contactName}
             </p>
-            <p>
+            <p className="text-lg text-gray-700">
               <strong>Email:</strong> {property.email}
             </p>
-            <p>
+            <p className="text-lg text-gray-700">
               <strong>Phone:</strong> {property.phone}
             </p>
           </div>
 
-          <div className="bg-gray-300 p-6 rounded-lg shadow-md">
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md">
             <p className="text-lg text-gray-600">
-              <strong>Created At:</strong>{" "}
-              {new Date(property.createdAt).toLocaleDateString()}{" "}
-              <strong>Updated At:</strong>{" "}
+              <strong>Created At:</strong>{' '}
+              {new Date(property.createdAt).toLocaleDateString()}{' '}
+              <strong>Updated At:</strong>{' '}
               {new Date(property.updatedAt).toLocaleDateString()}
             </p>
           </div>
         </div>
       </div>
-      <div className="h-20">
-        <FooterSection />
-      </div>
+
+      <FooterSection />
     </div>
-  );
+  )
 }

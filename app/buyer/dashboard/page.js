@@ -1,15 +1,15 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
-import BuyerNavbarComp from "@/app/components/BuyerNavbar";
-import AllPropertiesShowToBuyer from "@/app/components/ShowPropertiesToBuyer";
-import FooterSection from "@/app/components/Footer";
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { redirect } from 'next/navigation'
+import BuyerNavbarComp from '@/app/components/BuyerNavbar'
+import AllPropertiesShowToBuyer from '@/app/components/ShowPropertiesToBuyer'
+import FooterSection from '@/app/components/Footer'
 
 export default async function BuyerDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions)
 
-  if (!session || session.user.role !== "buyer") {
-    redirect("/buyer/login");
+  if (!session || session.user.role !== 'buyer') {
+    redirect('/buyer/login')
   }
 
   return (
@@ -17,9 +17,6 @@ export default async function BuyerDashboard() {
       <BuyerNavbarComp />
       <div className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-4xl mt-20">
-          <h1 className="text-center text-5xl text-gray-600 font-bold mb-6">
-            All Properties
-          </h1>
           <AllPropertiesShowToBuyer />
         </div>
       </div>
@@ -27,5 +24,5 @@ export default async function BuyerDashboard() {
         <FooterSection />
       </div>
     </div>
-  );
+  )
 }

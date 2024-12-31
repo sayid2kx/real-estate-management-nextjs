@@ -104,158 +104,139 @@ export default function RegisterForm({ role }) {
   }, [msg]);
 
   return (
-    <div className="bg-green-50 min-h-screen flex flex-col">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       <NavbarSection />
-      <div className="flex-grow flex flex-col items-center justify-center py-12 px-4">
-        <h1 className="text-3xl lg:text-4xl font-bold mb-6 text-gray-600">
-          {role === "buyer" ? "Buyer Registration" : "Seller Registration"}
-        </h1>
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg">
-          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">
-            Create Your Account
-          </h2>
+      <div className="flex-grow flex items-center justify-center p-10 pb-20">
+        <div className="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg p-8 rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+          <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-8">
+            {role === "seller" ? "Seller Registration" : "Buyer Registration"}
+          </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:space-x-4">
-              <div className="w-full sm:w-1/2">
-                <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="fullname"
-                  placeholder="Full Name"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.fullname}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
-                <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:space-x-4">
-              <div className="w-full sm:w-1/2">
-                <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
-                <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Phone Number"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.phone}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Password
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
+                Full Name
               </label>
               <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={formData.password}
+                type="text"
+                name="fullname"
+                placeholder="Full Name"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                value={formData.fullname}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-col sm:flex-row sm:space-x-4">
-              <div className="w-full sm:w-1/2">
-                <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Gender
-                </label>
-                <select
-                  name="gender"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.gender}
-                  onChange={handleChange}
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Others">Others</option>
-                </select>
-              </div>
-              <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
-                <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Country
-                </label>
-                <select
-                  name="country"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.country}
-                  onChange={handleChange}
-                >
-                  <option value="Bangladesh">Bangladesh</option>
-                  <option value="India">India</option>
-                  <option value="Pakistan">Pakistan</option>
-                  <option value="Nepal">Nepal</option>
-                </select>
-              </div>
+
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                value={formData.username}
+                onChange={handleChange}
+              />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone Number"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
                 Address
               </label>
               <input
                 type="text"
                 name="address"
                 placeholder="Address"
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 value={formData.address}
                 onChange={handleChange}
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
+                Gender
+              </label>
+              <select
+                name="gender"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                value={formData.gender}
+                onChange={handleChange}
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
+            <div className="w-full">
+              <label className="block text-xs font-medium text-gray-800 uppercase mb-1">
                 Profile Image
               </label>
               <input
                 type="file"
                 name="image"
                 accept="image/*"
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 onChange={handleChange}
               />
             </div>
 
             <button
               type="submit"
-              className="bg-blue-600 text-white font-bold py-3 px-4 rounded-md w-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full w-full hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all transform hover:scale-105"
             >
               Register
             </button>
           </form>
 
           {msg && (
-            <div className="bg-red-500 text-white text-sm py-2 px-4 rounded-md mt-4 text-center">
+            <div className="bg-red-500 text-white text-sm py-2 px-4 rounded-md mt-4 text-center animate-pulse">
               {msg}
             </div>
           )}
@@ -264,14 +245,14 @@ export default function RegisterForm({ role }) {
             Already have an account?{" "}
             <Link
               href={`/${role}/login`}
-              className="underline text-green-600 text-lg hover:text-green-800"
+              className="font-semibold text-purple-600 hover:text-purple-800 transition-colors"
             >
-              Login
+              Login here
             </Link>
           </p>
         </div>
       </div>
-      <div className="h-20">
+      <div className="h-16">
         <FooterSection />
       </div>
     </div>

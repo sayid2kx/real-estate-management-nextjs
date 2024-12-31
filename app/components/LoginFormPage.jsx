@@ -45,67 +45,68 @@ export default function LoginForm({ userType }) {
   }, [msg]);
 
   return (
-    <div className="bg-cyan-50 min-h-screen flex flex-col">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       <NavbarSection />
-      <div className="flex-grow flex flex-col items-center justify-center py-12 px-4">
-        <h1 className="text-3xl lg:text-4xl font-bold mb-8 text-gray-600">
-          {userType === "buyer" ? "Buyer Login" : "Seller Login"}
-        </h1>
-        <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md border-t-4 border-green-400">
-          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">
-            Login to Your Account
-          </h2>
+      <main className="flex-grow flex items-center justify-center p-4 pb-20">
+        <div className="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg p-8 rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+          <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-8">
+            {userType === "seller" ? "Seller Login" : "Buyer Login"}
+          </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Username or Email
-              </label>
+            <div className="relative">
               <input
                 onChange={(e) => setUsernameOrEmail(e.target.value)}
                 type="text"
                 placeholder="Username or Email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 value={usernameOrEmail}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Password
+              <label className="absolute left-4 top-0 text-xs font-semibold text-purple-600 transform -translate-y-1/2 bg-white px-1">
+                Username or Email
               </label>
+            </div>
+
+            <div className="relative">
               <input
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="Password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 value={password}
               />
+              <label className="absolute left-4 top-0 text-xs font-semibold text-purple-600 transform -translate-y-1/2 bg-white px-1">
+                Password
+              </label>
             </div>
+
             <button
               type="submit"
-              className="bg-blue-600 text-white font-bold py-3 rounded-md w-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full w-full hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all transform hover:scale-105"
             >
               Login
             </button>
+
             {msg && (
-              <div className="bg-red-500 text-white text-sm py-2 px-4 rounded-md mt-4 text-center">
+              <div className="bg-red-500 text-white text-sm py-2 px-4 rounded-md mt-4 text-center animate-pulse">
                 {msg}
               </div>
             )}
 
-            <p className="mt-6 text-sm text-gray-800 text-center">
+            <p className="mt-6 text-sm text-gray-600 text-center">
               Don't have an account?{" "}
               <Link
                 href={`/${userType}/register`}
-                className="underline text-green-600 text-lg hover:text-green-800"
+                className="font-semibold text-purple-600 hover:text-purple-800 transition-colors"
               >
-                Register
+                Register here
               </Link>
             </p>
           </form>
         </div>
-      </div>
-      <div className="h-20">
+      </main>
+      <div className="h-16">
         <FooterSection />
       </div>
     </div>
