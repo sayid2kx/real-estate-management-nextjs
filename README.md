@@ -118,6 +118,5 @@ A comprehensive web-based application that facilitates digital real estate trans
 **Sarowar Jahan Sayid**
 
 - GitHub: [@sayid2kx](https://github.com/sayid2kx)
-- Email: your.email@example.com
 
 **Happy Coding! 🚀**
