@@ -1,7 +1,7 @@
 import BuyerNavbarComp from '@/app/components/BuyerNavbar'
 import FooterSection from '@/app/components/Footer'
 
-export default function OrderPage() {
+export default function PropertyPage() {
   return (
     <div>
       <BuyerNavbarComp />

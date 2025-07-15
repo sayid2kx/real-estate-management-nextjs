@@ -1,21 +1,21 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Link from "next/link";
-import LogoutButton from "./LogoutButton";
+import { useState } from 'react'
+import Link from 'next/link'
+import LogoutButton from './LogoutButton'
 
 const SellerNavbarComp = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
 
   return (
     <nav className="bg-gray-800 p-6">
       <div className="flex justify-between items-center">
         <Link
-          href={"/seller/dashboard"}
+          href={'/seller/dashboard'}
           className="text-white text-2xl font-bold mx-auto md:mx-0 md:ml-4"
         >
           PrimerPlaces
@@ -45,16 +45,28 @@ const SellerNavbarComp = () => {
 
         <div className="hidden md:flex flex-1 justify-center gap-6">
           <Link
-            href="/seller/dashboard/all-properties"
+            href="/seller/dashboard"
             className="text-white text-xl hover:text-green-400 transition-colors duration-300"
           >
-            All Properties
+            Home
           </Link>
           <Link
             href="/seller/dashboard/my-properties"
             className="text-white text-xl hover:text-green-400 transition-colors duration-300"
           >
-            My Properties
+            Properties
+          </Link>
+          <Link
+            href="/seller/dashboard/order-requests"
+            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
+          >
+            Orders
+          </Link>
+          <Link
+            href="/seller/dashboard/chat"
+            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
+          >
+            Messages
           </Link>
           <Link
             href="/seller/dashboard/profile"
@@ -72,19 +84,31 @@ const SellerNavbarComp = () => {
       {isOpen && (
         <div className="md:hidden mt-4 flex flex-col gap-4 items-center text-center">
           <Link
-            href="/all-properties"
+            href="/seller/dashboard"
             className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
           >
-            All Properties
+            Home
           </Link>
           <Link
-            href="/my-properties"
+            href="/seller/dashboard/my-properties"
             className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
           >
             My Properties
           </Link>
           <Link
-            href="/profile"
+            href="/seller/dashboard/order-requests"
+            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
+          >
+            Order Requests
+          </Link>
+          <Link
+            href="/seller/dashboard/chat"
+            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
+          >
+            Messages
+          </Link>
+          <Link
+            href="/seller/dashboard/profile"
             className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
           >
             Profile
@@ -95,7 +119,7 @@ const SellerNavbarComp = () => {
         </div>
       )}
     </nav>
-  );
-};
+  )
+}
 
-export default SellerNavbarComp;
+export default SellerNavbarComp

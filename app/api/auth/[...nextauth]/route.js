@@ -1,57 +1,57 @@
-import NextAuth from "next-auth/next";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { connectToMongoDB } from "@/lib/database";
-import Buyer from "@/app/models/buyer";
-import Seller from "@/app/models/seller";
-import bcrypt from "bcryptjs";
+import NextAuth from 'next-auth/next'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import { connectToMongoDB } from '@/lib/database'
+import Buyer from '@/app/models/buyer'
+import Seller from '@/app/models/seller'
+import bcrypt from 'bcryptjs'
 
 export const authOptions = {
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: 'credentials',
       credentials: {
-        usernameOrEmail: { label: "Username or Email", type: "text" },
-        password: { label: "Password", type: "password" },
-        userType: { label: "User Type", type: "text" },
+        usernameOrEmail: { label: 'Username or Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+        userType: { label: 'User Type', type: 'text' },
       },
 
       async authorize(credentials) {
-        const { usernameOrEmail, password, userType } = credentials;
+        const { usernameOrEmail, password, userType } = credentials
 
         try {
-          await connectToMongoDB();
+          await connectToMongoDB()
 
-          let UserModel;
-          let user;
+          let UserModel
+          let user
 
-          if (userType === "buyer") {
-            UserModel = Buyer;
-          } else if (userType === "seller") {
-            UserModel = Seller;
+          if (userType === 'buyer') {
+            UserModel = Buyer
+          } else if (userType === 'seller') {
+            UserModel = Seller
           } else {
-            throw new Error("Invalid user type");
+            throw new Error('Invalid user type')
           }
 
           user = await UserModel.findOne({
             $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
-          });
+          })
 
           if (!user) {
-            return null;
+            return null
           }
 
-          const passwordsMatch = await bcrypt.compare(password, user.password);
+          const passwordsMatch = await bcrypt.compare(password, user.password)
           if (!passwordsMatch) {
-            return null;
+            return null
           }
 
           return {
             ...user.toObject(),
             role: userType,
-          };
+          }
         } catch (error) {
-          console.log("Error: ", error);
-          return null;
+          console.log('Error: ', error)
+          return null
         }
       },
     }),
@@ -59,24 +59,24 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.role = user.role
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
-      session.user.role = token.role;
-      return session;
+      session.user.role = token.role
+      return session
     },
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
-};
+}
 
-const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions)
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST }

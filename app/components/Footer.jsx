@@ -1,5 +1,5 @@
-"use client";
-import Link from "next/link";
+'use client'
+import Link from 'next/link'
 
 export default function FooterSection() {
   return (
@@ -66,10 +66,10 @@ export default function FooterSection() {
         </nav>
         <section className="mt-12 text-center text-gray-400">
           <p className="text-lg">
-            &copy; 2024 PremierPlaces. All rights reserved.
+            &copy; 2025 PremierPlaces. All rights reserved.
           </p>
         </section>
       </div>
     </footer>
-  );
+  )
 }

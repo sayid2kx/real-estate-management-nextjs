@@ -40,6 +40,7 @@ const PropertySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isAvailableForSale: { type: Boolean, default: true },
   },
   { timestamps: true },
 )

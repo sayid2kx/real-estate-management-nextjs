@@ -1,21 +1,21 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Link from "next/link";
-import LogoutButton from "./LogoutButton";
+import { useState } from 'react'
+import Link from 'next/link'
+import LogoutButton from './LogoutButton'
 
 const BuyerNavbarComp = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
 
   return (
     <nav className="bg-gray-800 p-6">
       <div className="flex justify-between items-center">
         <Link
-          href={"/buyer/dashboard"}
+          href={'/buyer/dashboard'}
           className="text-white text-2xl font-bold"
         >
           PremierPlaces
@@ -45,16 +45,41 @@ const BuyerNavbarComp = () => {
 
         <div className="hidden md:flex flex-1 justify-center items-center space-x-6">
           <Link
+            href="/buyer/dashboard"
+            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
+          >
+            Home
+          </Link>
+          <Link
+            href="/buyer/dashboard/properties"
+            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
+          >
+            Properties
+          </Link>
+          <Link
+            href="/buyer/dashboard/orders"
+            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
+          >
+            Orders
+          </Link>
+          <Link
+            href="/buyer/dashboard/cart"
+            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
+          >
+            Cart
+          </Link>
+          {/* Add Chat Link */}
+          <Link
+            href="/buyer/dashboard/chat"
+            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
+          >
+            Messages
+          </Link>
+          <Link
             href="/buyer/dashboard/profile"
             className="text-white text-xl hover:text-green-400 transition-colors duration-300"
           >
             Profile
-          </Link>
-          <Link
-            href="/buyer/dashboard/order"
-            className="text-white text-xl hover:text-green-400 transition-colors duration-300"
-          >
-            Order
           </Link>
         </div>
 
@@ -66,16 +91,41 @@ const BuyerNavbarComp = () => {
       {isOpen && (
         <div className="md:hidden mt-4 flex flex-col gap-4 items-center text-center">
           <Link
+            href="/buyer/dashboard"
+            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
+          >
+            Home
+          </Link>
+          <Link
+            href="/buyer/dashboard/properties"
+            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
+          >
+            Properties
+          </Link>
+          <Link
+            href="/buyer/dashboard/orders"
+            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
+          >
+            Orders
+          </Link>
+          <Link
+            href="/buyer/dashboard/cart"
+            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
+          >
+            Cart
+          </Link>
+          {/* Add Chat Link */}
+          <Link
+            href="/buyer/dashboard/chat"
+            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
+          >
+            Messages
+          </Link>
+          <Link
             href="/buyer/dashboard/profile"
             className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
           >
             Profile
-          </Link>
-          <Link
-            href="/buyer/dashboard/order"
-            className="text-white text-lg py-2 hover:text-green-400 transition-colors duration-300"
-          >
-            Order
           </Link>
           <div className="py-2">
             <LogoutButton />
@@ -83,7 +133,7 @@ const BuyerNavbarComp = () => {
         </div>
       )}
     </nav>
-  );
-};
+  )
+}
 
-export default BuyerNavbarComp;
+export default BuyerNavbarComp
