@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { connectToMongoDB } from '@/lib/database'
 import Review from '@/app/models/review'
-import BuyRequest from '@/app/models/BuyRequest'
-import Negotiation from '@/app/models/Negotiation'
+import PropertyOwnership from '@/app/models/PropertyOwnership'
 import Property from '@/app/models/properties'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
@@ -12,109 +11,83 @@ export async function POST(request) {
     await connectToMongoDB()
     const session = await getServerSession(authOptions)
 
-    if (!session || !session.user || !session.user.email) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { message: 'Unauthorized: User not authenticated' },
+        { status: 401 },
+      )
     }
 
     const buyerEmail = session.user.email
     const { propertyId, buyerMessage, rating } = await request.json()
 
-    if (
-      !propertyId ||
-      !buyerMessage ||
-      rating === undefined ||
-      rating === null
-    ) {
+    // Validate inputs
+    if (!propertyId || !buyerMessage || rating == null) {
       return NextResponse.json(
         {
           message:
-            'Missing required fields (propertyId, buyerMessage, or rating)',
+            'Missing required fields: propertyId, buyerMessage, and rating are required',
         },
         { status: 400 },
       )
     }
 
-    const ratingNum = parseInt(rating, 10)
+    const ratingNum = Number(rating)
     if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
       return NextResponse.json(
-        { message: 'Invalid rating value. Must be between 1 and 5.' },
+        { message: 'Invalid rating: Must be a number between 1 and 5' },
         { status: 400 },
       )
     }
 
-    const propertyDetails = await Property.findById(propertyId)
-      .select('propertyTitle price email')
+    // Verify property ownership
+    const ownership = await PropertyOwnership.findOne({
+      property: propertyId,
+      currentOwner: buyerEmail,
+    }).lean()
+
+    if (!ownership) {
+      return NextResponse.json(
+        { message: 'Unauthorized: You do not own this property' },
+        { status: 403 },
+      )
+    }
+
+    // Check for existing review
+    const existingReview = await Review.findOne({
+      property: propertyId,
+      buyerEmail,
+    })
+
+    if (existingReview) {
+      return NextResponse.json(
+        {
+          message:
+            'Conflict: You have already submitted a review for this property',
+        },
+        { status: 409 },
+      )
+    }
+
+    // Get property details
+    const property = await Property.findById(propertyId)
+      .select('propertyTitle email')
       .lean()
 
-    if (!propertyDetails) {
+    if (!property) {
       return NextResponse.json(
         { message: 'Property not found' },
         { status: 404 },
       )
     }
 
-    const sellerEmail = propertyDetails.email
-    const originalPrice = propertyDetails.price
-    const propertyName = propertyDetails.propertyTitle
-
-    let finalPrice = null
-    let transactionFound = false
-    let saleType = null
-
-    const buyRequest = await BuyRequest.findOne({
-      property: propertyId,
-      buyerEmail: buyerEmail,
-      status: 'accepted',
-    })
-
-    if (buyRequest) {
-      finalPrice = originalPrice
-      transactionFound = true
-      saleType = 'buyRequest'
-    } else {
-      const negotiation = await Negotiation.findOne({
-        property: propertyId,
-        buyerEmail: buyerEmail,
-        status: 'accepted',
-      })
-
-      if (negotiation) {
-        finalPrice = negotiation.offerPrice
-        transactionFound = true
-        saleType = 'negotiation'
-      }
-    }
-
-    if (!transactionFound) {
-      return NextResponse.json(
-        {
-          message:
-            'No accepted transaction found for this property by this buyer.',
-        },
-        { status: 404 },
-      )
-    }
-
-    const existingReview = await Review.findOne({
-      property: propertyId,
-      buyerEmail: buyerEmail,
-    })
-
-    if (existingReview) {
-      return NextResponse.json(
-        { message: 'You have already reviewed this property' },
-        { status: 409 },
-      )
-    }
-
+    // Create new review
     const newReview = new Review({
       property: propertyId,
-      propertyName: propertyName,
-      originalPrice: originalPrice,
-      negotiatedPrice: saleType === 'negotiation' ? finalPrice : undefined,
-      sellerEmail: sellerEmail,
-      buyerEmail: buyerEmail,
-      buyerMessage: buyerMessage,
+      propertyName: property.propertyTitle,
+      sellerEmail: property.email,
+      buyerEmail,
+      buyerMessage,
       rating: ratingNum,
     })
 
@@ -127,7 +100,7 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error submitting review:', error)
     return NextResponse.json(
-      { message: 'Failed to submit review' },
+      { message: `Failed to submit review: ${error.message}` },
       { status: 500 },
     )
   }

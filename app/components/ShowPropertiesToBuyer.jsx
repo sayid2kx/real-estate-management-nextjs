@@ -25,7 +25,7 @@ const AllPropertiesShowToBuyer = () => {
   const [currentPropertyId, setCurrentPropertyId] = useState(null)
   const [propertyReviews, setPropertyReviews] = useState({})
   const [expandedReviews, setExpandedReviews] = useState({})
-  const [showFilters, setShowFilters] = useState(true)
+  const [showFilters, setShowFilters] = useState(false) // Initialize as false
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalProperties, setTotalProperties] = useState(0)
@@ -39,7 +39,6 @@ const AllPropertiesShowToBuyer = () => {
       setApiError('')
       setIsDbEmpty(false)
       setNoFilteredResults(false)
-      setShowFilters(true)
 
       const params = new URLSearchParams({
         page: String(page),
@@ -63,24 +62,24 @@ const AllPropertiesShowToBuyer = () => {
 
         if (data.message === 'No properties found') {
           setIsDbEmpty(true)
-          setShowFilters(true)
+          setShowFilters(false) // Hide filters when database is empty
           setProperties([])
         } else if (data.message === 'No properties match the filter criteria') {
           setNoFilteredResults(true)
-          setShowFilters(false)
+          setShowFilters(true) // Show filters when properties exist but filtered out
           setProperties([])
         } else {
           setProperties(data.properties || [])
           setTotalPages(data.totalPages || 1)
           setTotalProperties(data.totalProperties || 0)
-          setShowFilters(true)
+          setShowFilters(true) // Show filters when properties exist
           if (data.properties && data.properties.length > 0) {
             fetchReviewsForProperties(data.properties.map((p) => p._id))
           }
         }
       } catch (err) {
         setApiError(err.message)
-        setShowFilters(true)
+        setShowFilters(false) // Hide filters on error
       } finally {
         setIsLoading(false)
       }
@@ -217,19 +216,25 @@ const AllPropertiesShowToBuyer = () => {
 
   const EmptyStateMessage = () => (
     <div className="flex flex-col items-center justify-center py-16 text-center w-full">
-      <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
-        <p className="text-2xl text-gray-700 mb-6">
-          {isDbEmpty
-            ? 'No properties found'
-            : 'No properties match the filter criteria'}
+      {isDbEmpty ? (
+        // Simple text for empty database
+        <p className="text-3xl md:text-4xl text-gray-700 font-medium">
+          No properties found
         </p>
-        <button
-          onClick={resetAndRefetch}
-          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-        >
-          {isDbEmpty ? 'Try Again' : 'Reset Filters'}
-        </button>
-      </div>
+      ) : (
+        // Container for filtered results
+        <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200 max-w-md w-full">
+          <p className="text-2xl text-gray-700 mb-6">
+            No properties match the filter criteria
+          </p>
+          <button
+            onClick={resetAndRefetch}
+            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            Reset Filters
+          </button>
+        </div>
+      )}
     </div>
   )
 

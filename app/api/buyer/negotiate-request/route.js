@@ -5,6 +5,7 @@ import { connectToMongoDB } from '@/lib/database'
 import Negotiation from '@/app/models/Negotiation'
 import BuyRequest from '@/app/models/BuyRequest'
 import Property from '@/app/models/properties'
+import Buyer from '@/app/models/buyer' // Import Buyer model
 import { sendNegotiationRequestEmail } from '@/lib/email'
 
 export async function POST(req) {
@@ -18,8 +19,22 @@ export async function POST(req) {
 
     const body = await req.json().catch(() => ({}))
     const { negotiations } = body
-    const buyerId = session.user.id
     const buyerEmail = session.user.email
+
+    // Fetch buyerId from Buyer model
+    const buyer = await Buyer.findOne({ email: buyerEmail })
+      .select('_id')
+      .lean()
+    if (!buyer) {
+      return NextResponse.json(
+        {
+          message:
+            'Buyer not found. Please make sure you are registered as a buyer.',
+        },
+        { status: 404 },
+      )
+    }
+    const buyerId = buyer._id
 
     if (!Array.isArray(negotiations) || negotiations.length === 0) {
       return NextResponse.json(

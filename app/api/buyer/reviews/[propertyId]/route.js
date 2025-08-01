@@ -18,6 +18,7 @@ export async function GET(request, { params }) {
     const reviews = await Review.find({ property: propertyId })
       .sort({ createdAt: -1 })
       .lean()
+
     const reviewsWithBuyerNames = await Promise.all(
       reviews.map(async (review) => {
         const buyer = await Buyer.findOne({ email: review.buyerEmail })
@@ -26,6 +27,7 @@ export async function GET(request, { params }) {
         return {
           ...review,
           buyerName: buyer ? buyer.fullname : 'Unknown Buyer',
+          canEdit: true, // Always allow edit in this simplified version
         }
       }),
     )

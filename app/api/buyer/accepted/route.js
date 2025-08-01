@@ -2,12 +2,10 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { connectToMongoDB } from '@/lib/database'
-import Property from '@/app/models/properties'
-import PropertyOwnership from '@/app/models/PropertyOwnership'
 import BuyRequest from '@/app/models/BuyRequest'
 import Negotiation from '@/app/models/Negotiation'
-import District from '@/app/models/District'
-import Division from '@/app/models/Division'
+import PropertyOwnership from '@/app/models/PropertyOwnership'
+import Property from '@/app/models/properties'
 
 export async function GET(request) {
   try {
@@ -19,89 +17,59 @@ export async function GET(request) {
     }
 
     const buyerEmail = session.user.email
-    const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page')) || 1
-    const limit = parseInt(searchParams.get('limit')) || 10
-    const propertyType = searchParams.get('propertyType') || ''
-    const district = searchParams.get('district') || ''
-    const division = searchParams.get('division') || ''
-    const status = searchParams.get('status') || ''
 
-    const skip = (page - 1) * limit
-
-    let query = {}
-    if (propertyType) query.propertyType = propertyType
-    if (district) query.district = district
-    if (division) query.division = division
-
-    const properties = await Property.find(query)
-      .populate('district', 'name')
-      .populate('division', 'name')
-      .lean()
-
-    const buyerRequests = await Promise.all([
+    // Fetch both buy requests and negotiations
+    const [buyRequests, negotiations] = await Promise.all([
       BuyRequest.find({
         buyerEmail,
         status: { $in: ['accepted', 'finalized'] },
       })
-        .select('property')
+        .populate('property')
         .lean(),
       Negotiation.find({
         buyerEmail,
         status: { $in: ['accepted', 'finalized'] },
       })
-        .select('property')
+        .populate('property')
         .lean(),
     ])
 
-    const excludedPropertyIds = [
-      ...buyerRequests[0].map((req) => req.property.toString()),
-      ...buyerRequests[1].map((req) => req.property.toString()),
+    // Combine results and add type indicator
+    let orders = [
+      ...buyRequests.map((req) => ({ ...req, type: 'buy' })),
+      ...negotiations.map((neg) => ({ ...neg, type: 'negotiation' })),
     ]
 
-    const filteredProperties = await Promise.all(
-      properties.map(async (property) => {
-        if (excludedPropertyIds.includes(property._id.toString())) {
-          return null
-        }
+    // Fetch additional data for each order
+    orders = await Promise.all(
+      orders.map(async (order) => {
+        // 1. Get property's original price from Property model
+        const property = await Property.findById(order.property._id).lean()
+        const originalPrice = property?.price || 0
 
+        // 2. Get ownership details from PropertyOwnership
         const ownership = await PropertyOwnership.findOne({
-          property: property._id,
+          property: order.property._id,
+          requestId: order._id,
         }).lean()
-        const isSold = ownership && ownership.status === 'finalized'
-
-        if (status === 'available' && isSold) return null
-        if (status === 'sold' && !isSold) return null
 
         return {
-          ...property,
-          district: property.district
-            ? { name: property.district.name }
-            : { name: 'N/A' },
-          division: property.division
-            ? { name: property.division.name }
-            : { name: 'N/A' },
+          ...order,
+          property: {
+            ...order.property,
+            originalPrice, // Add original price to property object
+          },
+          ownership: ownership || null,
+          purchasePrice: ownership?.purchasePrice || 0,
         }
       }),
     )
 
-    const validProperties = filteredProperties.filter(Boolean)
-    const total = validProperties.length
-    const paginatedProperties = validProperties.slice(skip, skip + limit)
-
-    return NextResponse.json(
-      {
-        properties: paginatedProperties,
-        total,
-        page,
-        totalPages: Math.ceil(total / limit),
-      },
-      { status: 200 },
-    )
+    return NextResponse.json({ orders }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching properties:', error)
+    console.error('Error fetching accepted orders:', error)
     return NextResponse.json(
-      { message: 'Failed to fetch properties', error: error.message },
+      { message: 'Failed to fetch accepted orders', error: error.message },
       { status: 500 },
     )
   }

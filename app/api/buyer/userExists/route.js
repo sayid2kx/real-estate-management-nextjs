@@ -1,30 +1,38 @@
-import { connectToMongoDB } from "@/lib/database";
-import Buyer from "@/app/models/buyer";
-import { NextResponse } from "next/server";
+import { connectToMongoDB } from '@/lib/database'
+import Buyer from '@/app/models/buyer'
+import Seller from '@/app/models/seller'
+import { NextResponse } from 'next/server'
 
 export async function POST(req) {
   try {
-    await connectToMongoDB();
-    const { email, username } = await req.json();
+    await connectToMongoDB()
+    const { email, username } = await req.json()
 
-    const user = await Buyer.findOne({
+    // Check for existing user in Buyer collection
+    const buyer = await Buyer.findOne({
       $or: [{ email }, { username }],
-    }).select("_id email username");
+    }).select('_id email username role')
 
-    if (user) {
-      console.log("User found: ", user);
-      return NextResponse.json({ user });
-    } else {
-      return NextResponse.json(
-        { message: "No user found with the provided email or username." },
-        { status: 404 }
-      );
+    // Check for existing user in Seller collection
+    const seller = await Seller.findOne({
+      $or: [{ email }, { username }],
+    }).select('_id email username role')
+
+    if (buyer || seller) {
+      const user = buyer || seller
+      const role = buyer ? 'buyer' : 'seller'
+      return NextResponse.json({ user: { ...user._doc, role } })
     }
-  } catch (error) {
-    console.error("Error checking buyer existence:", error);
+
     return NextResponse.json(
-      { message: "An error occurred while checking buyer existence." },
-      { status: 500 }
-    );
+      { message: 'No user found with the provided email or username.' },
+      { status: 404 },
+    )
+  } catch (error) {
+    console.error('Error checking user existence:', error)
+    return NextResponse.json(
+      { message: 'An error occurred while checking user existence.' },
+      { status: 500 },
+    )
   }
 }

@@ -16,7 +16,9 @@ const PropertiesPageforBuyer = () => {
   const [existingReview, setExistingReview] = useState(null)
   const [propertyReviews, setPropertyReviews] = useState({})
   const [expandedReviews, setExpandedReviews] = useState({})
+  const [reviewLoadingId, setReviewLoadingId] = useState(null)
   const [buyerEmail, setBuyerEmail] = useState(null)
+  const [canReviewProperties, setCanReviewProperties] = useState({})
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -46,8 +48,7 @@ const PropertiesPageforBuyer = () => {
           }
         } else {
           console.error(
-            `Error fetching reviews for property ${propertyId}:`,
-            response.status,
+            `Error fetching reviews for property ${propertyId}: ${response.status}`,
           )
           reviewsData[propertyId] = []
         }
@@ -60,6 +61,28 @@ const PropertiesPageforBuyer = () => {
       }
     }
     setPropertyReviews((prevReviews) => ({ ...prevReviews, ...reviewsData }))
+  }
+
+  const checkOwnership = async (propertyIds) => {
+    const ownershipData = {}
+    for (const propertyId of propertyIds) {
+      try {
+        const response = await fetch(`/api/buyer/check-ownership/${propertyId}`)
+        if (response.ok) {
+          const data = await response.json()
+          ownershipData[propertyId] = data.isOwner
+        } else {
+          ownershipData[propertyId] = false
+        }
+      } catch (error) {
+        console.error(
+          `Failed to check ownership for property ${propertyId}:`,
+          error,
+        )
+        ownershipData[propertyId] = false
+      }
+    }
+    setCanReviewProperties((prev) => ({ ...prev, ...ownershipData }))
   }
 
   const fetchProperties = async () => {
@@ -80,7 +103,9 @@ const PropertiesPageforBuyer = () => {
         setProperties(data.properties)
         setError('')
         if (data.properties && data.properties.length > 0) {
-          fetchReviewsForProperties(data.properties.map((p) => p._id))
+          const propertyIds = data.properties.map((p) => p._id)
+          fetchReviewsForProperties(propertyIds)
+          checkOwnership(propertyIds)
         }
         return data.properties
       } else {
@@ -107,6 +132,7 @@ const PropertiesPageforBuyer = () => {
 
   const handleReviewAction = async (property) => {
     try {
+      setReviewLoadingId(property._id)
       const sessionResponse = await fetch('/api/auth/session')
       const session = await sessionResponse.json()
       const buyerEmail = session?.user?.email
@@ -135,6 +161,8 @@ const PropertiesPageforBuyer = () => {
       }
     } catch (error) {
       console.error('Failed to check existing review:', error)
+    } finally {
+      setReviewLoadingId(null)
     }
   }
 
@@ -238,19 +266,12 @@ const PropertiesPageforBuyer = () => {
               propertyReviews[property._id]?.some(
                 (review) => review.buyerEmail === buyerEmail,
               )
+            const canReview = canReviewProperties[property._id]
             return (
               <li
                 key={property._id}
                 className="bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col relative"
               >
-                {property.soldDetails && (
-                  <div
-                    className={`absolute top-0 right-0 py-1 px-3 rounded-bl z-10 font-bold text-white bg-red-600`}
-                  >
-                    SOLD
-                  </div>
-                )}
-
                 <div className="w-full md:w-auto flex flex-col md:flex-row">
                   <div className="w-full md:w-1/3">
                     <Link href={`/buyer/dashboard/${property._id}`} passHref>
@@ -278,33 +299,7 @@ const PropertiesPageforBuyer = () => {
                       <p className="text-lg text-gray-600 mb-4">
                         {property.propertyType} -{' '}
                         <span className="font-semibold">
-                          {property.soldDetails ? (
-                            property.soldDetails.purchaseType ===
-                            'negotiation' ? (
-                              <>
-                                <span className="line-through text-sm mr-1 text-gray-500">
-                                  {(property.price || 0).toLocaleString()} BDT
-                                </span>
-                                <span className="text-green-600">
-                                  {(
-                                    property.soldDetails.purchasePrice || 0
-                                  ).toLocaleString()}{' '}
-                                  BDT (Sold)
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-green-600">
-                                {(
-                                  property.soldDetails.purchasePrice ||
-                                  property.price ||
-                                  0
-                                ).toLocaleString()}{' '}
-                                BDT (Sold)
-                              </span>
-                            )
-                          ) : (
-                            `${(property.price || 0).toLocaleString()} BDT`
-                          )}
+                          {(property.price || 0).toLocaleString()} BDT
                         </span>
                       </p>
                       <p className="text-sm text-gray-500 mb-4">
@@ -325,86 +320,64 @@ const PropertiesPageforBuyer = () => {
                           <strong>Year Built:</strong> {property.yearBuilt}
                         </p>
                       </div>
-                      {property.soldDetails && (
-                        <div className="mt-4 text-sm text-gray-700 border border-gray-300 rounded-lg p-4 bg-gray-50">
-                          <p>
-                            <strong>Buyer:</strong>{' '}
-                            {property.soldDetails.buyerInfo.fullname || 'N/A'}
-                          </p>
-                          <p>
-                            <strong>Accepted Price:</strong>{' '}
-                            {(
-                              property.soldDetails.purchasePrice || 0
-                            ).toLocaleString()}{' '}
-                            BDT
-                          </p>
-                          <p>
-                            <strong>Date:</strong>{' '}
-                            {new Date(
-                              property.soldDetails.purchaseDate,
-                            ).toLocaleDateString()}
-                          </p>
-                        </div>
-                      )}
                     </div>
 
-                    {property.soldDetails &&
-                      property.soldDetails.status === 'finalized' &&
-                      buyerEmail && (
-                        <div className="mt-4 flex gap-4 self-end">
-                          <button
-                            onClick={() => handleReviewAction(property)}
-                            className="px-4 py-2 rounded-md text-white bg-purple-500 hover:bg-purple-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-                          >
-                            {hasReview ? 'Edit Review' : 'Write Review'}
-                          </button>
-                        </div>
-                      )}
+                    {canReview && buyerEmail && (
+                      <div className="mt-4 flex gap-4 self-end">
+                        <button
+                          onClick={() => handleReviewAction(property)}
+                          disabled={reviewLoadingId === property._id}
+                          className={`px-4 py-2 rounded-md text-white ${
+                            reviewLoadingId === property._id
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-purple-500 hover:bg-purple-600'
+                          } transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50`}
+                        >
+                          {reviewLoadingId === property._id
+                            ? 'Loading...'
+                            : hasReview
+                              ? 'Edit Review'
+                              : 'Write Review'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {property.soldDetails &&
-                  property.soldDetails.status === 'finalized' && (
-                    <div className="w-full px-6 py-4 bg-gray-50 border-t border-gray-200">
-                      {propertyReviews[property._id] &&
-                      propertyReviews[property._id].length > 0 ? (
-                        <>
-                          <div className="flex justify-start items-center mb-3">
-                            <button
-                              onClick={() =>
-                                toggleReviewsVisibility(property._id)
-                              }
-                              className="text-blue-600 hover:underline text-sm font-medium focus:outline-none mr-4"
-                            >
-                              {expandedReviews[property._id]
-                                ? 'Hide Reviews'
-                                : 'Show Reviews'}
-                            </button>
-                            <span className="text-sm text-gray-700">
-                              ({propertyReviews[property._id].length} Reviews)
-                            </span>
-                          </div>
+                <div className="w-full px-6 py-4 bg-gray-50 border-t border-gray-200">
+                  {propertyReviews[property._id] &&
+                  propertyReviews[property._id].length > 0 ? (
+                    <>
+                      <div className="flex justify-start items-center mb-3">
+                        <button
+                          onClick={() => toggleReviewsVisibility(property._id)}
+                          className="text-blue-600 hover:underline text-sm font-medium focus:outline-none mr-4"
+                        >
+                          {expandedReviews[property._id]
+                            ? 'Hide Reviews'
+                            : 'Show Reviews'}
+                        </button>
+                        <span className="text-sm text-gray-700">
+                          ({propertyReviews[property._id].length} Reviews)
+                        </span>
+                      </div>
 
-                          {expandedReviews[property._id] && (
-                            <div className="space-y-4">
-                              {propertyReviews[property._id].map((review) => (
-                                <ReviewDisplay
-                                  key={review._id}
-                                  review={review}
-                                />
-                              ))}
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="flex justify-start items-center">
-                          <span className="text-sm text-gray-500">
-                            No Reviews Yet
-                          </span>
+                      {expandedReviews[property._id] && (
+                        <div className="space-y-4">
+                          {propertyReviews[property._id].map((review) => (
+                            <ReviewDisplay key={review._id} review={review} />
+                          ))}
                         </div>
                       )}
+                    </>
+                  ) : (
+                    <div className="flex justify-start items-center">
+                      <span className="text-sm text-gray-500">
+                        No Reviews Yet
+                      </span>
                     </div>
                   )}
+                </div>
               </li>
             )
           })}

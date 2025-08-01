@@ -1,36 +1,36 @@
-"use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import NavbarSection from "./Navbar";
-import FooterSection from "./Footer";
+'use client'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import NavbarSection from './Navbar'
+import FooterSection from './Footer'
 
 export default function RegisterForm({ role }) {
   const [formData, setFormData] = useState({
-    fullname: "",
-    email: "",
-    username: "",
-    phone: "",
-    address: "",
-    password: "",
-    country: "Bangladesh",
+    fullname: '',
+    email: '',
+    username: '',
+    phone: '',
+    address: '',
+    password: '',
+    country: 'Bangladesh',
     image: null,
-    gender: "Male",
-  });
-  const [msg, setMsg] = useState("");
+    gender: 'Male',
+  })
+  const [msg, setMsg] = useState('')
 
-  const router = useRouter();
+  const router = useRouter()
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type, files } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "file" ? files[0] : value,
-    }));
-  };
+      [name]: type === 'file' ? files[0] : value,
+    }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (
       !formData.fullname ||
@@ -40,68 +40,72 @@ export default function RegisterForm({ role }) {
       !formData.address ||
       !formData.password
     ) {
-      setMsg("All fields are necessary.");
-      return;
+      setMsg('All fields are necessary.')
+      return
     }
 
     try {
       const resUserExists = await fetch(`/api/${role}/userExists`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: formData.email,
           username: formData.username,
         }),
-      });
+      })
 
-      const { user } = await resUserExists.json();
+      const { user } = await resUserExists.json()
 
       if (user) {
-        setMsg("User already exists.");
-        return;
+        if (user.email === formData.email) {
+          setMsg(`This email is already registered as a ${user.role}.`)
+        } else if (user.username === formData.username) {
+          setMsg('This username is already taken.')
+        }
+        return
       }
 
-      const formDataToSend = new FormData();
+      const formDataToSend = new FormData()
       for (const key in formData) {
-        formDataToSend.append(key, formData[key]);
+        formDataToSend.append(key, formData[key])
       }
 
       const res = await fetch(`/api/${role}/register`, {
-        method: "POST",
+        method: 'POST',
         body: formDataToSend,
-      });
+      })
 
       if (res.ok) {
         setFormData({
-          fullname: "",
-          email: "",
-          username: "",
-          phone: "",
-          address: "",
-          password: "",
-          country: "Bangladesh",
+          fullname: '',
+          email: '',
+          username: '',
+          phone: '',
+          address: '',
+          password: '',
+          country: 'Bangladesh',
           image: null,
-          gender: "Male",
-        });
-        setMsg("");
-        router.push(`/${role}/login`);
+          gender: 'Male',
+        })
+        setMsg('')
+        router.push(`/${role}/login`)
       } else {
-        setMsg("User registration failed.");
+        setMsg('User registration failed.')
       }
     } catch (error) {
-      console.error("Error during registration: ", error);
-      setMsg("An error occurred during registration.");
+      console.error('Error during registration: ', error)
+      setMsg('An error occurred during registration.')
     }
-  };
+  }
 
   useEffect(() => {
     if (msg) {
-      const timer = setTimeout(() => setMsg(""), 1500);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setMsg(''), 1500)
+      return () => clearTimeout(timer)
     }
-  }, [msg]);
+  }, [msg])
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
@@ -110,7 +114,7 @@ export default function RegisterForm({ role }) {
         <div className="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg p-8 rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
           <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-8">
-            {role === "seller" ? "Seller Registration" : "Buyer Registration"}
+            {role === 'seller' ? 'Seller Registration' : 'Buyer Registration'}
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -242,7 +246,7 @@ export default function RegisterForm({ role }) {
           )}
 
           <p className="mt-6 text-sm text-gray-600 text-center">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link
               href={`/${role}/login`}
               className="font-semibold text-purple-600 hover:text-purple-800 transition-colors"
@@ -256,5 +260,5 @@ export default function RegisterForm({ role }) {
         <FooterSection />
       </div>
     </div>
-  );
+  )
 }

@@ -6,7 +6,7 @@ const NegotiationModal = ({ selectedProperties, onClose, onSubmit }) => {
     selectedProperties.map((property) => ({
       propertyId: property._id,
       message: '',
-      offerPrice: Math.round(property.price * 0.9),
+      offerPrice: '', // Changed from Math.round(property.price * 0.9) to ''
       error: '',
     })),
   )
@@ -22,6 +22,13 @@ const NegotiationModal = ({ selectedProperties, onClose, onSubmit }) => {
           selectedProperties.find((p) => p._id === propertyId)?.price || 0
 
         if (field === 'offerPrice') {
+          // Allow empty input to clear the field
+          if (value === '') {
+            updated.offerPrice = ''
+            updated.error = ''
+            return updated
+          }
+
           const val = parseInt(value, 10)
 
           if (isNaN(val) || val <= 0) {
@@ -42,8 +49,21 @@ const NegotiationModal = ({ selectedProperties, onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const hasError = negotiations.some((neg) => neg.error)
-    if (hasError) return
+    // Check for empty offerPrice or errors
+    const hasError = negotiations.some(
+      (neg) => neg.error || neg.offerPrice === '' || neg.offerPrice == null,
+    )
+    if (hasError) {
+      setNegotiations((prev) =>
+        prev.map((neg) => {
+          if (neg.offerPrice === '' || neg.offerPrice == null) {
+            return { ...neg, error: 'Offer price is required.' }
+          }
+          return neg
+        }),
+      )
+      return
+    }
 
     const sanitized = negotiations.map(({ error, ...valid }) => valid)
     onSubmit(sanitized)
@@ -120,7 +140,9 @@ const NegotiationModal = ({ selectedProperties, onClose, onSubmit }) => {
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-              disabled={negotiations.some((n) => n.error)}
+              disabled={negotiations.some(
+                (n) => n.error || n.offerPrice === '' || n.offerPrice == null,
+              )}
             >
               Submit Negotiation
             </button>

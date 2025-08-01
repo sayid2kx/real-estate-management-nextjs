@@ -11,14 +11,6 @@ const ReviewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    originalPrice: {
-      type: Number,
-      required: true,
-    },
-    negotiatedPrice: {
-      type: Number,
-      required: false,
-    },
     sellerEmail: {
       type: String,
       required: true,

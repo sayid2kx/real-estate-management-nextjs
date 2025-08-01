@@ -216,6 +216,8 @@ const CartPage = () => {
         <div className="grid gap-6">
           {cartItems.map((item) => {
             const property = item.property
+            const isAccepted = item.isAccepted // Get acceptance status
+
             return (
               <div
                 key={item._id}
@@ -260,23 +262,31 @@ const CartPage = () => {
                       </p>
                     </div>
 
-                    <div className="mt-6 flex flex-wrap gap-4">
-                      <button
-                        onClick={() => handleBuyNow(property._id)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition"
-                      >
-                        Buy Now
-                      </button>
+                    <div className="mt-6 flex flex-wrap gap-4 items-center">
+                      {!isAccepted ? (
+                        <>
+                          <button
+                            onClick={() => handleBuyNow(property._id)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition"
+                          >
+                            Buy Now
+                          </button>
 
-                      <button
-                        onClick={() => {
-                          setSelectedItems([property])
-                          setShowNegotiation(true)
-                        }}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded transition"
-                      >
-                        Negotiate
-                      </button>
+                          <button
+                            onClick={() => {
+                              setSelectedItems([property])
+                              setShowNegotiation(true)
+                            }}
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded transition"
+                          >
+                            Negotiate
+                          </button>
+                        </>
+                      ) : (
+                        <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-medium">
+                          Request Accepted
+                        </span>
+                      )}
 
                       <button
                         onClick={() => setPropertyToDelete(property)}

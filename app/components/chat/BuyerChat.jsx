@@ -10,10 +10,8 @@ export default function BuyerChatPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      if (session.user.role !== 'buyer') {
-        router.push('/')
-      }
+    if (status === 'authenticated' && session.user.role !== 'buyer') {
+      router.push('/')
     } else if (status === 'unauthenticated') {
       router.push('/login')
     }

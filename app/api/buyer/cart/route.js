@@ -8,6 +8,7 @@ import BuyRequest from '@/app/models/BuyRequest'
 import Negotiation from '@/app/models/Negotiation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import mongoose from 'mongoose'
 
 export async function POST(request) {
   try {
@@ -77,6 +78,7 @@ export async function GET() {
     }
 
     const buyerEmail = session.user.email
+    const propertiesToRemove = []
 
     // Fetch cart and populate property
     const cart = await Cart.findOne({ buyerEmail })
@@ -95,19 +97,39 @@ export async function GET() {
 
         const propertyId = item.property._id
 
+        // Check for finalized/rejected statuses
         const buyRequest = await BuyRequest.findOne({
           buyerEmail,
           property: propertyId,
-          status: { $in: ['accepted', 'finalized'] },
+          status: { $in: ['finalized', 'rejected'] },
         })
 
         const negotiationRequest = await Negotiation.findOne({
           buyerEmail,
           property: propertyId,
-          status: { $in: ['accepted', 'finalized'] },
+          status: { $in: ['finalized', 'rejected'] },
         })
 
-        if (buyRequest || negotiationRequest) return null
+        // Collect properties to remove
+        if (buyRequest || negotiationRequest) {
+          propertiesToRemove.push(propertyId)
+          return null
+        }
+
+        // Check for accepted status
+        const buyRequestAccepted = await BuyRequest.findOne({
+          buyerEmail,
+          property: propertyId,
+          status: 'accepted',
+        })
+
+        const negotiationAccepted = await Negotiation.findOne({
+          buyerEmail,
+          property: propertyId,
+          status: 'accepted',
+        })
+
+        const isAccepted = !!(buyRequestAccepted || negotiationAccepted)
 
         const district = await District.findById(item.property.district).lean()
         const division = divisions.find(
@@ -121,9 +143,21 @@ export async function GET() {
             district: district ? { name: district.name } : { name: 'N/A' },
             division: division ? { name: division.name } : { name: 'N/A' },
           },
+          isAccepted, // Add accepted status flag
         }
       }),
     )
+
+    // Remove invalid items from cart
+    if (propertiesToRemove.length > 0) {
+      const uniqueIds = [...new Set(propertiesToRemove)]
+      const objectIds = uniqueIds.map((id) => new mongoose.Types.ObjectId(id))
+
+      await Cart.updateOne(
+        { buyerEmail },
+        { $pull: { items: { property: { $in: objectIds } } } },
+      )
+    }
 
     const enrichedItems = filteredItems.filter(Boolean)
 
